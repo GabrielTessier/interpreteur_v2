@@ -83,6 +83,15 @@ bool next_token(token_t* tok, FILE* prog) {
         break;
       }
     }
+    if (strcmp(tok->str, "vrai") == 0) {
+      tok->tok = VRAI;
+    } else if (strcmp(tok->str, "faux") == 0) {
+      tok->tok = FAUX;
+    } else if (strcmp(tok->str, "si") == 0) {
+      tok->tok = SI;
+    } else if (strcmp(tok->str, "sinon") == 0) {
+      tok->tok = SINON;
+    }
     break;
   case '0' ... '9':
     tok->tok = NOMBRE;
@@ -144,6 +153,22 @@ bool next_token(token_t* tok, FILE* prog) {
     tok->tok = POINT_VIRGULE;
     next_char(prog);
     break;
+  case '&':
+    next_char(prog);
+    if (token_preview != '&') return false;
+    next_char(prog);
+    tok->tok = ET;
+    break;
+  case '|':
+    next_char(prog);
+    if (token_preview != '|') return false;
+    next_char(prog);
+    tok->tok = OU;
+    break;
+  case '?':
+    tok->tok = INTERROGATION;
+    next_char(prog);
+    break;
   case EOF:
     tok->tok = EOF_TOK;
     tok->str = NULL;
@@ -163,6 +188,8 @@ char* token_to_string(token_t tok) {
   case NOMBRE:
   case COMPARAISON:
   case TYPE:
+  case SI:
+  case SINON:
     size_t size = strlen(tok.str)+1;
     res = (char*) malloc(sizeof(char)*size);
     memcpy(res, tok.str, size);
@@ -198,6 +225,26 @@ char* token_to_string(token_t tok) {
   case POINT_VIRGULE:
     res = (char*) malloc(sizeof(char)*2);
     res[0] = ';'; res[1] = '\0';
+    break;
+  case ET:
+    res = (char*) malloc(sizeof(char)*3);
+    res[0] = '&'; res[1] = '&'; res[2] = '\0';
+    break;
+  case OU:
+    res = (char*) malloc(sizeof(char)*3);
+    res[0] = '|'; res[1] = '|'; res[2] = '\0';
+    break;
+  case VRAI:
+    res = (char*) malloc(sizeof(char)*2);
+    res[0] = 'V'; res[1] = '\0';
+    break;
+  case FAUX:
+    res = (char*) malloc(sizeof(char)*2);
+    res[0] = 'F'; res[1] = '\0';
+    break;
+  case INTERROGATION:
+    res = (char*) malloc(sizeof(char)*2);
+    res[0] = '?'; res[1] = '\0';
     break;
   case EOF_TOK:
     res = (char*) malloc(sizeof(char)*4);
