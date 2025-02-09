@@ -1,0 +1,3 @@
+[submodule "external/list"]
+	path = external/list
+	url = https://github.com/GabrielTessier/list.git
