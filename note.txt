@@ -4,43 +4,47 @@
 
 
 
-s 		-> code EOF_TOK  [EOF_TOK, LACCOLADE, TYPE, VARIABLE, NUMBER, INTERROGATION, SI, PRINT]
+s 		-> code EOF_TOK  [EOF_TOK, LACCOLADE, TYPE, VARIABLE, NOMBRE, INTERROGATION, SI, PRINT]
 
-code		-> sm_commande code [LACCOLADE, TYPE, VARIABLE, NUMBER, INTERROGATION, SI, PRINT]
+code		-> sm_commande code [LACCOLADE, TYPE, VARIABLE, NOMBRE, INTERROGATION, SI, PRINT]
 		 | epsilon          [EOF_TOK, RACCOLADE]
 
-sm_commande	-> commande 		    [TYPE, VARIABLE, NUMBER, INTERROGATION, SI, PRINT]
+sm_commande	-> commande 		    [TYPE, VARIABLE, NOMBRE, INTERROGATION, SI, PRINT]
 		 | LACCOLADE code RACCOLADE [LACCOLADE]
 
 commande	-> creation_var		   [TYPE]
-		 | expr POINT_VIRGULE	   [VARIABLE, NUMBER]
+		 | expr POINT_VIRGULE	   [VARIABLE, NOMBRE]
 		 | condition POINT_VIRGULE [INTERROGATION]
 		 | si			   [SI]
 		 | PRINT LPARENTHESE print RPARENTHESE POINT_VIRGULE  [PRINT]
 
-print		-> expr      [VARIABLE, NUMBER]
+print		-> expr      [VARIABLE, NOMBRE]
 		 | condition [INTERROGATION]
-		 
+
 creation_var	-> TYPE(!t) VARIABLE(¡t) crea_var_2(¡t)   [TYPE]
 crea_var_2(¡t)	-> AFFECTATION expr(!t2=t) POINT_VIRGULE  [AFFECTATION]
 		 | POINT_VIRGULE                          [POINT_VIRGULE]
 
 expr(!t)	-> VARIABLE(!t2) expr_var(¡t2)   t := t2  [VARIABLE]
-		 | NUMBER                        t := int [NUMBER]
+		 | NOMBRE                        t := int [NOMBRE]
 expr_var(¡t)	-> var_aff(¡t)  [AFFECTATION]
 		 | epsilon      [POINT_VIRGULE, RPARENTHESE]
 var_aff(¡t)	-> AFFECTATION expr(!t2=t)  [AFFECTATION]
 
 condition	-> INTERROGATION LPARENTHESE condition_2 RPARENTHESE   [INTERROGATION]
-condition_2	-> et_condition ( OU et_condition )*    [VRAI, FAUX, VARIABLE, LPARENTHESE]
-et_condition	-> ou_condition ( AND ou_condition )*	[VRAI, FAUX, VARIABLE, LPARENTHESE]
-ou_condition	-> VRAI                                 [VRAI]
-		 | FAUX					[FAUX]
-		 | VARIABLE(!t) comp(¡t)		[VARIABLE]
+condition_2	-> et_condition ou_loop       [VRAI, FAUX, VARIABLE, LPARENTHESE]
+ou_loop         -> OU et_condition ou_loop    [OU]
+                 | epsilon                    [RPARENTHESE]
+et_condition	-> ou_condition et_loop       [VRAI, FAUX, VARIABLE, LPARENTHESE]
+et_loop         -> ET ou_condition et_loop    [ET]
+                 | epsilon                    [OU, RPARENTHESE]
+ou_condition	-> VRAI                       [VRAI]
+		 | FAUX			      [FAUX]
+		 | VARIABLE(!t) comp(¡t)      [VARIABLE]
 		 | LPARENTHESE condition_2 RPARENTHESE	[LPARENTHESE]
 comp(¡t)	-> COMPARAISON VARIABLE(!t1=t)	[COMPARAISON]
-		 | epsilon			[AND, OU, RPARENTHESE]
+		 | epsilon			[ET, OU, RPARENTHESE]
 
-si	 	-> SI condition sm_commande si_2   [SI]
-si_2		-> SINON sm_commande POINT_VIRGULE [SINON]
-		 | POINT_VIRGULE		   [POINT_VIRGULE]
+si	 	-> SI condition sm_commande sinon   [SI]
+sinon		-> SINON sm_commande [SINON]
+		 | epsilon           [LACCOLADE, TYPE, VARIABLE, NOMBRE, INTERROGATION, SI, PRINT]

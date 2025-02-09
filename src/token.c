@@ -91,6 +91,8 @@ bool next_token(token_t* tok, FILE* prog) {
       tok->tok = SI;
     } else if (strcmp(tok->str, "sinon") == 0) {
       tok->tok = SINON;
+    } else if (strcmp(tok->str, "print") == 0) {
+      tok->tok = PRINT;
     }
     break;
   case '0' ... '9':
@@ -190,6 +192,7 @@ char* token_to_string(token_t tok) {
   case TYPE:
   case SI:
   case SINON:
+  case PRINT:
     size_t size = strlen(tok.str)+1;
     res = (char*) malloc(sizeof(char)*size);
     memcpy(res, tok.str, size);
@@ -252,4 +255,10 @@ char* token_to_string(token_t tok) {
     break;
   }
   return res;
+}
+
+
+void free_token(token_t* tok) {
+  if (tok->str != NULL) free(tok->str);
+  free(tok);
 }

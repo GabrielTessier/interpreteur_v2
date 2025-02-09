@@ -2,8 +2,11 @@
 
 int a = 3;
 a = 4;
-si ?(a>5) {
+int b = 5;
+si ?(a>b) {
   a = 8;
 } sinon {
   a = 9;
 }
+
+popo = 3;
